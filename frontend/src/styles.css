@@ -1,0 +1,99 @@
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    font-family: system-ui;
+    background: #f5f7fb;
+    color: #172033
+}
+
+header {
+    height: 64px;
+    background: #111827;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px
+}
+
+nav {
+    display: flex;
+    gap: 18px;
+    align-items: center
+}
+
+header a {
+    color: #fff
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none
+}
+
+main {
+    max-width: 1000px;
+    margin: 32px auto;
+    padding: 0 20px
+}
+
+.card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap
+}
+
+input {
+    padding: 11px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    min-width: 220px
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer
+}
+
+.auth {
+    max-width: 420px;
+    margin: 80px auto
+}
+
+.auth form {
+    display: grid;
+    gap: 12px
+}
+
+.error {
+    color: #b91c1c
+}
+
+.badge {
+    display: inline-block;
+    background: #eef2ff;
+    padding: 5px 8px;
+    border-radius: 999px;
+    margin: 0 0 12px
+}

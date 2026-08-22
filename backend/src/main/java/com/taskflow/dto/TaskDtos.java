@@ -1,0 +1,1 @@
+package com.taskflow.dto; import com.taskflow.entity.TaskStatus; import jakarta.validation.constraints.*; public final class TaskDtos{private TaskDtos(){} public record TaskRequest(@NotBlank String title,String description,TaskStatus status){} public record TaskResponse(Long id,String title,String description,TaskStatus status){}}
