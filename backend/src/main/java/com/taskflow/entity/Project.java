@@ -14,6 +14,9 @@ public class Project {
     @Column(nullable = false)
     String name;
     String description;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    ProjectStatus status = ProjectStatus.ACTIVE;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     User owner;
 }

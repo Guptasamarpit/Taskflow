@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findAllByOwnerIdOrderByIdDesc(Long id);
-
+    List<Project> findAllByOwnerIdAndNameContainingIgnoreCaseOrderByIdDesc(Long ownerId, String status);
+    
     Optional<Project> findByIdAndOwnerId(Long id, Long ownerId);
 }
