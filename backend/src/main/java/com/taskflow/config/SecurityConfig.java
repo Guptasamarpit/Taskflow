@@ -1,2 +1,39 @@
-package com.taskflow.config; import com.taskflow.security.JwtAuthFilter; import java.util.*; import org.springframework.context.annotation.*; import org.springframework.security.config.annotation.web.builders.*; import org.springframework.security.config.http.*; import org.springframework.security.crypto.bcrypt.*; import org.springframework.security.crypto.password.*; import org.springframework.security.web.*; import org.springframework.security.web.authentication.*; import org.springframework.web.cors.*;
-@Configuration public class SecurityConfig{@Bean PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}@Bean SecurityFilterChain chain(HttpSecurity h,JwtAuthFilter f)throws Exception{return h.csrf(c->c.disable()).cors(c->c.configurationSource(cors())).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(a->a.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated()).addFilterBefore(f,UsernamePasswordAuthenticationFilter.class).build();}@Bean CorsConfigurationSource cors(){var c=new CorsConfiguration();c.setAllowedOrigins(List.of("http://localhost:5173"));c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));c.setAllowedHeaders(List.of("*"));var s=new UrlBasedCorsConfigurationSource();s.registerCorsConfiguration("/**",c);return s;}}
+package com.taskflow.config;
+
+import com.taskflow.security.JwtAuthFilter;
+import java.util.*;
+import org.springframework.context.annotation.*;
+import org.springframework.security.config.annotation.web.builders.*;
+import org.springframework.security.config.http.*;
+import org.springframework.security.crypto.bcrypt.*;
+import org.springframework.security.crypto.password.*;
+import org.springframework.security.web.*;
+import org.springframework.security.web.authentication.*;
+import org.springframework.web.cors.*;
+
+@Configuration
+public class SecurityConfig {
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    SecurityFilterChain chain(HttpSecurity h, JwtAuthFilter f) throws Exception {
+        return h.csrf(c -> c.disable()).cors(c -> c.configurationSource(cors()))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(a -> a.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
+                .addFilterBefore(f, UsernamePasswordAuthenticationFilter.class).build();
+    }
+
+    @Bean
+    CorsConfigurationSource cors() {
+        var c = new CorsConfiguration();
+        c.setAllowedOrigins(List.of("http://localhost:5173"));
+        c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        c.setAllowedHeaders(List.of("*"));
+        var s = new UrlBasedCorsConfigurationSource();
+        s.registerCorsConfiguration("/**", c);
+        return s;
+    }
+}
