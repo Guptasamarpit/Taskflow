@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Project from "./pages/Project";
+import Profile from "./pages/Profile";
 import "./styles.css";
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/projects/:id" element={<Project />} />
+               <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
         </Routes>

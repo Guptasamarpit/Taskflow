@@ -1,1 +1,26 @@
-package com.taskflow.controller; import com.taskflow.dto.AuthDtos.*; import com.taskflow.service.AuthService; import jakarta.validation.*; import org.springframework.web.bind.annotation.*; @RestController @RequestMapping("/api/auth") public class AuthController{final AuthService s;public AuthController(AuthService s){this.s=s;}@PostMapping("/register")AuthResponse register(@Valid @RequestBody RegisterRequest r){return s.register(r);}@PostMapping("/login")AuthResponse login(@Valid @RequestBody LoginRequest r){return s.login(r);}}
+package com.taskflow.controller;
+
+import com.taskflow.dto.AuthDtos.*;
+import com.taskflow.service.AuthService;
+import jakarta.validation.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    final AuthService s;
+
+    public AuthController(AuthService s) {
+        this.s = s;
+    }
+
+    @PostMapping("/register")
+    AuthResponse register(@Valid @RequestBody RegisterRequest r) {
+        return s.register(r);
+    }
+
+    @PostMapping("/login")
+    AuthResponse login(@Valid @RequestBody LoginRequest r) {
+        return s.login(r);
+    }
+}
