@@ -53,8 +53,111 @@ main {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 16px
 }
+.stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px
+}
 
-.row {
+.stat {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px
+}
+
+.stat b {
+    font-size: 28px;
+    display: block
+}
+
+.stat span {
+    color: #64748b
+}
+
+.row,
+.toolbar,
+.between {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr 1fr auto;
+    gap: 10px
+}
+
+.comments {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 14px;
+    padding-top: 8px
+}
+
+input,
+select {
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    min-width: 180px
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer
+}
+
+button:hover {
+    opacity: .9
+}
+
+.auth {
+    max-width: 430px;
+    margin: 80px auto
+}
+
+.auth form {
+    display: grid;
+    gap: 12px
+}
+
+.error {
+    color: #b91c1c
+}
+
+.badge {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 12px
+}
+
+@media(max-width:800px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr)
+    }
+
+    .grid-form {
+        grid-template-columns: 1fr
+    }
+
+    .row {
+        align-items: stretch
+    }
+
+    .row input {
+        width: 100%
+    }
+}
+/* .row {
     display: flex;
     gap: 10px;
     flex-wrap: wrap
@@ -96,4 +199,4 @@ button {
     padding: 5px 8px;
     border-radius: 999px;
     margin: 0 0 12px
-}
+} */
