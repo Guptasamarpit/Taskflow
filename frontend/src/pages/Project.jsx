@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client";
+import CommentModal from "../components/CommentModal";
+
 export default function Project() {
   const { id } = useParams();
   const [p, setP] = useState(),
@@ -10,7 +12,10 @@ export default function Project() {
     [priority, setPriority] = useState("MEDIUM"),
     [dueDate, setDueDate] = useState(""),
     [filter, setFilter] = useState(""),
-    [comments, setComments] = useState({});
+    [comments, setComments] = useState({}),
+    [commentModalOpen, setCommentModalOpen] = useState(false),
+    [activeTaskId, setActiveTaskId] = useState(null);
+
   const load = async () => {
     const [a, b] = await Promise.all([
       api.get(`/projects/${id}`),
@@ -18,24 +23,30 @@ export default function Project() {
         params: filter ? { status: filter } : undefined,
       }),
     ]);
+
     setP(a.data);
     setTs(b.data);
+
     const entries = await Promise.all(
       b.data.map(async (t) => [
         t.id,
         (await api.get(`/projects/${id}/tasks/${t.id}/comments`)).data,
       ]),
     );
+
     setComments(Object.fromEntries(entries));
   };
-useEffect(() => {
-  load().catch((error) => {
-    console.error("Failed to load project comments:", error);
-  });
-}, [id, filter]);
+
+  useEffect(() => {
+    load().catch((error) => {
+      console.error("Failed to load project comments:", error);
+    });
+  }, [id, filter]);
+
   async function add(e) {
     e.preventDefault();
     if (!title.trim()) return;
+
     await api.post(`/projects/${id}/tasks`, {
       title,
       description: desc,
@@ -43,11 +54,13 @@ useEffect(() => {
       priority,
       dueDate: dueDate || null,
     });
+
     setTitle("");
     setDesc("");
     setDueDate("");
     load();
   }
+
   async function next(t) {
     const status =
       t.status === "TODO"
@@ -55,6 +68,7 @@ useEffect(() => {
         : t.status === "IN_PROGRESS"
           ? "DONE"
           : "TODO";
+
     await api.put(`/projects/${id}/tasks/${t.id}`, {
       title: t.title,
       description: t.description,
@@ -62,25 +76,39 @@ useEffect(() => {
       priority: t.priority,
       dueDate: t.dueDate,
     });
+
     load();
   }
+
   async function del(t) {
     await api.delete(`/projects/${id}/tasks/${t.id}`);
     load();
   }
-  async function addComment(tid) {
-    const content = prompt("Comment");
-    if (content?.trim()) {
-      await api.post(`/projects/${id}/tasks/${tid}/comments`, { content });
-      load();
-    }
-  }
+
+  const openCommentModal = (tid) => {
+    setActiveTaskId(tid);
+    setCommentModalOpen(true);
+  };
+
+  const submitComment = async (content) => {
+    if (!activeTaskId) return;
+
+    await api.post(`/projects/${id}/tasks/${activeTaskId}/comments`, {
+      content,
+    });
+    setCommentModalOpen(false);
+    setActiveTaskId(null);
+    load();
+  };
+
   if (!p) return <p>Loading...</p>;
+
   return (
     <>
       <p>
         <Link to="/">← Dashboard</Link>
       </p>
+
       <div className="between">
         <div>
           <h1>{p.name}</h1>
@@ -126,6 +154,7 @@ useEffect(() => {
           <option value="DONE">Done</option>
         </select>
       </div>
+
       <div className="grid">
         {ts.map((t) => (
           <article className="card" key={t.id}>
@@ -139,7 +168,7 @@ useEffect(() => {
               {t.dueDate && <> · Due: {t.dueDate}</>}
             </p>
             <button onClick={() => next(t)}>Next status</button>{" "}
-            <button onClick={() => addComment(t.id)}>Comment</button>{" "}
+            <button onClick={() => openCommentModal(t.id)}>Comment</button>{" "}
             <button onClick={() => del(t)}>Delete</button>
             {comments[t.id]?.length > 0 && (
               <div className="comments">
@@ -154,6 +183,17 @@ useEffect(() => {
           </article>
         ))}
       </div>
+
+      <CommentModal
+        open={commentModalOpen}
+        onClose={() => {
+          setCommentModalOpen(false);
+          setActiveTaskId(null);
+        }}
+        activeTaskId={activeTaskId}
+        projectId={id}
+        onSubmit={submitComment}
+      />
     </>
   );
 }

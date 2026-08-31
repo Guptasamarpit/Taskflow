@@ -7,6 +7,7 @@ import com.taskflow.repository.*;
 import java.util.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectService {
@@ -62,7 +63,8 @@ public class ProjectService {
         p.setStatus(r.status() == null ? ProjectStatus.ACTIVE : r.status());
         return d(ps.save(p));
     }
-
+    
+    @Transactional
     public void delete(String e, Long id) {
         Project p = p(e, id);
         cs.deleteAllByTaskProjectId(id);
