@@ -7,6 +7,7 @@ import com.taskflow.repository.*;
 import java.util.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TaskService {
@@ -31,7 +32,7 @@ public class TaskService {
     TaskResponse d(Task t) {
         return new TaskResponse(t.getId(), t.getTitle(), t.getDescription(), t.getStatus(), t.getPriority(), t.getDueDate());
     }
-
+ @Transactional(readOnly = true)
     public List<TaskResponse> all(String e, Long pid, String status, String priority, String search) {
         project(e, pid);
         List<Task> x;
@@ -68,7 +69,7 @@ public class TaskService {
         t.setDueDate(r.dueDate());
         return d(ts.save(t));
     }
-
+   @Transactional
     public void delete(String e, Long pid, Long id) {
         project(e, pid);
         Task t = ts.findByIdAndProjectId(id, pid)
