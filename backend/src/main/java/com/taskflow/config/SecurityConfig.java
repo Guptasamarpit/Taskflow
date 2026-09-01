@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource cors() {
         var c = new CorsConfiguration();
-        c.setAllowedOrigins(List.of("http://localhost:5173", "https://taskflow-rv7zotvae-taskflow-510f.vercel.app"));
+        c.setAllowedOrigins(List.of("http://localhost:5173", "https://taskflow-lemon-beta.vercel.app"));
         c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         c.setAllowedHeaders(List.of("*"));
         var s = new UrlBasedCorsConfigurationSource();
