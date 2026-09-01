@@ -40,7 +40,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173
+Open https://taskflow-lemon-beta.vercel.app/
 
 Default API: http://localhost:8080/api
 
@@ -51,3 +51,11 @@ Default API: http://localhost:8080/api
 4. Add pagination and filtering.
 5. Add tests.
 6. Add Dockerized deployment.
+
+
+#Deployment 
+
+Deployment has been done for the first phase . 
+1. UI is deployed in vercel .
+2. Backend is deployed in Render . 
+3. Database is deployed in Neon
