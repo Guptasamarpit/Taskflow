@@ -2,6 +2,7 @@ package com.taskflow.service;
 
 import com.taskflow.dto.ProjectDtos.*;
 import com.taskflow.entity.*;
+import com.taskflow.event.producer.TaskFlowEventProducer;
 import com.taskflow.exception.*;
 import com.taskflow.repository.*;
 import java.util.*;
@@ -15,12 +16,15 @@ public class ProjectService {
     final UserRepository us;
     final TaskRepository ts;
     final CommentRepository cs;
+    final TaskFlowEventProducer eventProducer;
 
-    public ProjectService(ProjectRepository p, UserRepository u, TaskRepository t, CommentRepository c) {
+    public ProjectService(ProjectRepository p, UserRepository u, TaskRepository t, CommentRepository c,
+            TaskFlowEventProducer eventProducer) {
         ps = p;
         us = u;
         ts = t;
-        cs = c; 
+        cs = c;
+        this.eventProducer = eventProducer;
     }
 
     User user(String e) {
@@ -53,7 +57,11 @@ public class ProjectService {
         p.setDescription(r.description());
         p.setStatus(r.status() == null ? ProjectStatus.ACTIVE : r.status());
         p.setOwner(user(e));
-        return d(ps.save(p));
+        Project saved = ps.save(p);
+        eventProducer.publish("ProjectCreated", saved.getOwner().getId(), saved.getId(), null,
+                Map.of("name", saved.getName(), "description", saved.getDescription(), "status",
+                        saved.getStatus().name()));
+        return d(saved);
     }
 
     public ProjectResponse update(String e, Long id, ProjectRequest r) {
@@ -61,7 +69,11 @@ public class ProjectService {
         p.setName(r.name());
         p.setDescription(r.description());
         p.setStatus(r.status() == null ? ProjectStatus.ACTIVE : r.status());
-        return d(ps.save(p));
+        Project saved = ps.save(p);
+        eventProducer.publish("ProjectUpdated", saved.getOwner().getId(), saved.getId(), null,
+                Map.of("name", saved.getName(), "description", saved.getDescription(), "status",
+                        saved.getStatus().name()));
+        return d(saved);
     }
     
     @Transactional
@@ -70,5 +82,7 @@ public class ProjectService {
         cs.deleteAllByTaskProjectId(id);
         ts.deleteAllByProjectId(id);
         ps.delete(p);
+        eventProducer.publish("ProjectDeleted", p.getOwner().getId(), p.getId(), null,
+                Map.of("projectId", p.getId(), "name", p.getName()));
     }
 }

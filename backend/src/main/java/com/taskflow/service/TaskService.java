@@ -2,6 +2,7 @@ package com.taskflow.service;
 
 import com.taskflow.dto.TaskDtos.*;
 import com.taskflow.entity.*;
+import com.taskflow.event.producer.TaskFlowEventProducer;
 import com.taskflow.exception.*;
 import com.taskflow.repository.*;
 import java.util.*;
@@ -15,12 +16,15 @@ public class TaskService {
     final ProjectRepository ps;
     final UserRepository us;
     final CommentRepository cs;
+    final TaskFlowEventProducer eventProducer;
 
-    public TaskService(TaskRepository t, ProjectRepository p, UserRepository u, CommentRepository c) {
+    public TaskService(TaskRepository t, ProjectRepository p, UserRepository u, CommentRepository c,
+            TaskFlowEventProducer eventProducer) {
         ts = t;
         ps = p;
         us = u;
-        cs = c; 
+        cs = c;
+        this.eventProducer = eventProducer;
     }
 
     Project project(String e, Long id) {
@@ -55,7 +59,11 @@ public class TaskService {
         t.setStatus(r.status() == null ? TaskStatus.TODO : r.status());
         t.setPriority(r.priority() == null ? TaskPriority.MEDIUM : r.priority());
         t.setDueDate(r.dueDate());
-        return d(ts.save(t));
+        Task saved = ts.save(t);
+        eventProducer.publish("TaskCreated", saved.getProject().getOwner().getId(), saved.getProject().getId(),
+                saved.getId(), Map.of("title", saved.getTitle(), "description", saved.getDescription(), "status",
+                        saved.getStatus().name(), "priority", saved.getPriority().name()));
+        return d(saved);
     }
 
     public TaskResponse update(String e, Long pid, Long id, TaskRequest r) {
@@ -67,7 +75,11 @@ public class TaskService {
         t.setStatus(r.status() == null ? TaskStatus.TODO : r.status());
         t.setPriority(r.priority() == null ? TaskPriority.MEDIUM : r.priority());
         t.setDueDate(r.dueDate());
-        return d(ts.save(t));
+        Task saved = ts.save(t);
+        eventProducer.publish("TaskUpdated", saved.getProject().getOwner().getId(), saved.getProject().getId(),
+            saved.getId(), Map.of("title", saved.getTitle(), "description", saved.getDescription(), "status",
+                saved.getStatus().name(), "priority", saved.getPriority().name()));
+        return d(saved);
     }
    @Transactional
     public void delete(String e, Long pid, Long id) {
@@ -76,5 +88,7 @@ public class TaskService {
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Task not found"));
                 cs.deleteAllByTaskId(id);
         ts.delete(t);
+        eventProducer.publish("TaskDeleted", t.getProject().getOwner().getId(), t.getProject().getId(), t.getId(),
+            Map.of("title", t.getTitle(), "projectId", t.getProject().getId()));
     }
 }
